@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import './Add.css';
 
-const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
-  const id = selectedEmployee.id;
+const Edit = ({ employees, setEmployees, setIsEditing, selectedEmployee }) => {
+  const [clientName, setClientName] = useState(selectedEmployee.clientName);
+  const [contactInfo, setContactInfo] = useState(selectedEmployee.contactInfo);
+  const [receivedDate, setReceivedDate] = useState(selectedEmployee.receivedDate);
+  const [inventoryReceived, setInventoryReceived] = useState(selectedEmployee.inventoryReceived);
+  const [reportedStatus, setReportedStatus] = useState(selectedEmployee.reportedStatus);
+  // const [clientNotes, setClientNotes] = useState(selectedEmployee.clientNotes);
+  const [assignedTechnician, setAssignedTechnician] = useState(selectedEmployee.assignedTechnician);
+  const [estimatedAmount, setEstimatedAmount] = useState(selectedEmployee.estimatedAmount);
+  const [deadline, setDeadline] = useState(selectedEmployee.deadline);
+  const [status, setStatus] = useState(selectedEmployee.status);
+  const [note, setNote] = useState(selectedEmployee.note);
 
-  const [firstName, setFirstName] = useState(selectedEmployee.firstName);
-  const [lastName, setLastName] = useState(selectedEmployee.lastName);
-  const [email, setEmail] = useState(selectedEmployee.email);
-  const [salary, setSalary] = useState(selectedEmployee.salary);
-  const [date, setDate] = useState(selectedEmployee.date);
-
-  const handleUpdate = e => {
+  const handleEdit = (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date) {
+    if (!clientName || !contactInfo || !receivedDate || !inventoryReceived || !reportedStatus || !assignedTechnician || !estimatedAmount || !deadline || !status || !note) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -22,30 +27,30 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
       });
     }
 
-    const employee = {
-      id,
-      firstName,
-      lastName,
-      email,
-      salary,
-      date,
+    const updatedEmployee = {
+      id: selectedEmployee.id,
+      clientName,
+      contactInfo,
+      receivedDate,
+      inventoryReceived,
+      inventoryDocument: selectedEmployee.inventoryDocument, // Keep the original document
+      reportedStatus,
+      assignedTechnician,
+      estimatedAmount,
+      deadline,
+      status,
+      note,
     };
 
-    for (let i = 0; i < employees.length; i++) {
-      if (employees[i].id === id) {
-        employees.splice(i, 1, employee);
-        break;
-      }
-    }
-
-    localStorage.setItem('employees_data', JSON.stringify(employees));
-    setEmployees(employees);
+    const updatedEmployees = employees.map(emp => emp.id === selectedEmployee.id ? updatedEmployee : emp);
+    localStorage.setItem('employees_data', JSON.stringify(updatedEmployees));
+    setEmployees(updatedEmployees);
     setIsEditing(false);
 
     Swal.fire({
       icon: 'success',
       title: 'Updated!',
-      text: `${employee.firstName} ${employee.lastName}'s data has been updated.`,
+      text: `Client ${clientName}'s job sheet has been updated.`,
       showConfirmButton: false,
       timer: 1500,
     });
@@ -53,50 +58,89 @@ const Edit = ({ employees, selectedEmployee, setEmployees, setIsEditing }) => {
 
   return (
     <div className="small-container">
-      <form onSubmit={handleUpdate}>
-        <h1>Edit Employee</h1>
-        <label htmlFor="firstName">First Name</label>
+      <form onSubmit={handleEdit}>
+        <h1>Edit Job Sheet</h1>
+        <label htmlFor="clientName">Client Name</label>
         <input
-          id="firstName"
+          id="clientName"
           type="text"
-          name="firstName"
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          name="clientName"
+          value={clientName}
+          onChange={(e) => setClientName(e.target.value)}
         />
-        <label htmlFor="lastName">Last Name</label>
+        <label htmlFor="contactInfo">Contact Info</label>
         <input
-          id="lastName"
+          id="contactInfo"
           type="text"
-          name="lastName"
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
+          name="contactInfo"
+          value={contactInfo}
+          onChange={(e) => setContactInfo(e.target.value)}
         />
-        <label htmlFor="email">Email</label>
+        <label htmlFor="receivedDate">Received Date</label>
         <input
-          id="email"
-          type="email"
-          name="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <label htmlFor="salary">Salary ($)</label>
-        <input
-          id="salary"
-          type="number"
-          name="salary"
-          value={salary}
-          onChange={e => setSalary(e.target.value)}
-        />
-        <label htmlFor="date">Date</label>
-        <input
-          id="date"
+          id="receivedDate"
           type="date"
-          name="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
+          name="receivedDate"
+          value={receivedDate}
+          onChange={(e) => setReceivedDate(e.target.value)}
         />
+        <label htmlFor="inventoryReceived">Inventory Received</label>
+        <input
+          id="inventoryReceived"
+          type="text"
+          name="inventoryReceived"
+          value={inventoryReceived}
+          onChange={(e) => setInventoryReceived(e.target.value)}
+        />
+        <label htmlFor="reportedStatus">Reported Status</label>
+        <input
+          id="reportedStatus"
+          type="text"
+          name="reportedStatus"
+          value={reportedStatus}
+          onChange={(e) => setReportedStatus(e.target.value)}
+        />
+        <label htmlFor="assignedTechnician">Assigned Technician</label>
+        <input
+          id="assignedTechnician"
+          type="text"
+          name="assignedTechnician"
+          value={assignedTechnician}
+          onChange={(e) => setAssignedTechnician(e.target.value)}
+        />
+        <label htmlFor="estimatedAmount">Estimated Amount ($)</label>
+        <input
+          id="estimatedAmount"
+          type="number"
+          name="estimatedAmount"
+          value={estimatedAmount}
+          onChange={(e) => setEstimatedAmount(e.target.value)}
+        />
+        <label htmlFor="deadline">Deadline</label>
+        <input
+          id="deadline"
+          type="date"
+          name="deadline"
+          value={deadline}
+          onChange={(e) => setDeadline(e.target.value)}
+        />
+        <label htmlFor="status">Status</label>
+        <input
+          id="status"
+          type="text"
+          name="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        />
+        <label htmlFor="note">Add or Update Note</label>
+        <textarea
+          id="note"
+          name="note"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        ></textarea>
         <div style={{ marginTop: '30px' }}>
-          <input type="submit" value="Update" />
+          <input type="submit" value="Save Changes" />
           <input
             style={{ marginLeft: '12px' }}
             className="muted-button"

@@ -1,17 +1,36 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 
-const Add = ({ employees, setEmployees, setIsAdding }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [salary, setSalary] = useState('');
-  const [date, setDate] = useState('');
+const Add = ({ setIsAdding, employees, setEmployees }) => {
+  const [clientName, setClientName] = useState('');
+  const [contactInfo, setContactInfo] = useState('');
+  const [receivedDate, setReceivedDate] = useState('');
+  const [inventoryReceived, setInventoryReceived] = useState('');
+  const [inventoryDocument, setInventoryDocument] = useState(''); 
+  const [reportedStatus, setReportedStatus] = useState('');
+  const [assignedTechnician, setAssignedTechnician] = useState('');
+  const [estimatedAmount, setEstimatedAmount] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [status, setStatus] = useState('');
+  const [note, setNote] = useState('');
 
-  const handleAdd = e => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setInventoryDocument(reader.result); 
+    };
+
+    if (file) {
+      reader.readAsDataURL(file); 
+    }
+  };
+
+  const handleAdd = (e) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !salary || !date) {
+    if (!clientName || !contactInfo || !receivedDate || !inventoryReceived || !inventoryDocument || !reportedStatus || !assignedTechnician || !estimatedAmount || !deadline || !status || !note) {
       return Swal.fire({
         icon: 'error',
         title: 'Error!',
@@ -20,84 +39,94 @@ const Add = ({ employees, setEmployees, setIsAdding }) => {
       });
     }
 
-    const id = employees.length + 1;
     const newEmployee = {
-      id,
-      firstName,
-      lastName,
-      email,
-      salary,
-      date,
+      id: Date.now(), // Unique ID for demonstration
+      clientName,
+      contactInfo,
+      receivedDate,
+      inventoryReceived,
+      inventoryDocument, // Base64 string
+      reportedStatus,
+      assignedTechnician,
+      estimatedAmount,
+      deadline,
+      status,
+      note,
     };
 
-    employees.push(newEmployee);
-    localStorage.setItem('employees_data', JSON.stringify(employees));
-    setEmployees(employees);
-    setIsAdding(false);
+    const updatedEmployees = [...employees, newEmployee];
+    localStorage.setItem('employees', JSON.stringify(updatedEmployees));
+    setEmployees(updatedEmployees); // Update state with new data
 
+    setIsAdding(false);
     Swal.fire({
       icon: 'success',
       title: 'Added!',
-      text: `${firstName} ${lastName}'s data has been Added.`,
+      text: `Client ${clientName}'s job sheet has been added.`,
       showConfirmButton: false,
       timer: 1500,
     });
   };
 
   return (
-    <div className="small-container">
+    <div className="add-container">
       <form onSubmit={handleAdd}>
-        <h1>Add Employee</h1>
-        <label htmlFor="firstName">First Name</label>
-        <input
-          id="firstName"
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
-        />
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          id="lastName"
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-        />
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          name="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <label htmlFor="salary">Salary ($)</label>
-        <input
-          id="salary"
-          type="number"
-          name="salary"
-          value={salary}
-          onChange={e => setSalary(e.target.value)}
-        />
-        <label htmlFor="date">Date</label>
-        <input
-          id="date"
-          type="date"
-          name="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-        />
-        <div style={{ marginTop: '30px' }}>
-          <input type="submit" value="Add" />
-          <input
-            style={{ marginLeft: '12px' }}
-            className="muted-button"
-            type="button"
-            value="Cancel"
-            onClick={() => setIsAdding(false)}
-          />
-        </div>
+        <label>
+          Client Name:
+          <input type="text" placeholder="Client Name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
+        </label>
+
+        <label>
+          Contact Info:
+          <input type="text" placeholder="Contact Info" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} />
+        </label>
+
+        <label>
+          Received Date:
+          <input type="date" placeholder="Received Date" value={receivedDate} onChange={(e) => setReceivedDate(e.target.value)} />
+        </label>
+
+        <label>
+          Inventory Received:
+          <input type="text" placeholder="Inventory Received" value={inventoryReceived} onChange={(e) => setInventoryReceived(e.target.value)} />
+        </label>
+
+        <label>
+          Inventory Document (PDF):
+          <input type="file" accept="application/pdf" onChange={handleFileChange} />
+        </label>
+
+        <label>
+          Reported Status:
+          <input type="text" placeholder="Reported Status" value={reportedStatus} onChange={(e) => setReportedStatus(e.target.value)} />
+        </label>
+
+        <label>
+          Assigned Technician:
+          <input type="text" placeholder="Assigned Technician" value={assignedTechnician} onChange={(e) => setAssignedTechnician(e.target.value)} />
+        </label>
+
+        <label>
+          Estimated Amount:
+          <input type="number" placeholder="Estimated Amount" value={estimatedAmount} onChange={(e) => setEstimatedAmount(e.target.value)} />
+        </label>
+
+        <label>
+          Deadline:
+          <input type="date" placeholder="Deadline" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+        </label>
+
+        <label>
+          Status:
+          <input type="text" placeholder="Status" value={status} onChange={(e) => setStatus(e.target.value)} />
+        </label>
+
+        <label>
+          Note:
+          <textarea placeholder="Note" value={note} onChange={(e) => setNote(e.target.value)} />
+        </label>
+
+        <button type="submit">Add</button>
       </form>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import Login from '../Login';
 import Dashboard from '../Dashboard';
+import Header from '../Dashboard/Header';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -13,7 +14,9 @@ const App = () => {
   return (
     <>
       {isAuthenticated ? (
-        <Dashboard setIsAuthenticated={setIsAuthenticated} />
+        <>
+        <Header/>
+        <Dashboard setIsAuthenticated={setIsAuthenticated} /></>
       ) : (
         <Login setIsAuthenticated={setIsAuthenticated} />
       )}
